@@ -18,6 +18,8 @@
 /* USER CODE BEGIN STM32TouchController */
 
 #include <STM32TouchController.hpp>
+#include <touchgfx/hal/HAL.hpp>
+#include "GT811.h"
 
 void STM32TouchController::init()
 {
@@ -25,6 +27,7 @@ void STM32TouchController::init()
      * Initialize touch controller and driver
      *
      */
+	touchgfx::HAL::getInstance()->setTouchSampleRate(2);
 }
 
 bool STM32TouchController::sampleTouch(int32_t& x, int32_t& y)
@@ -39,6 +42,19 @@ bool STM32TouchController::sampleTouch(int32_t& x, int32_t& y)
      * By default sampleTouch is called every tick, this can be adjusted by HAL::setTouchSampleRate(int8_t);
      *
      */
+	TS_StateTypeDef  TS_State;
+	TS_State.touchDetected = 0;
+
+	GT811_GetState(&TS_State);
+
+	uint8_t TouchPoint = TS_State.touchDetected;
+	if(TouchPoint & 0x01)
+	{
+		x = TS_State.touchX[0];
+		y = TS_State.touchY[0];
+		return true;
+	}
+
     return false;
 }
 

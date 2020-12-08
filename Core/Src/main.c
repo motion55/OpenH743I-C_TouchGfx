@@ -21,6 +21,7 @@
 #include "main.h"
 #include "crc.h"
 #include "dma2d.h"
+#include "i2c.h"
 #include "ltdc.h"
 #include "tim.h"
 #include "usart.h"
@@ -32,6 +33,7 @@
 /* USER CODE BEGIN Includes */
 #include "BSP_SDRAM.h"
 #include "BSP_RGB_LCD.h"
+#include "GT811.h"
 
 /* USER CODE END Includes */
 
@@ -100,43 +102,17 @@ int main(void)
   MX_DMA2D_Init();
   MX_TIM2_Init();
   MX_CRC_Init();
+  MX_I2C4_Init();
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
-  BSP_SDRAM_Init();
-  HAL_Delay(200);
-#if 1
-//  uint32_t i = 0;
-//  for (int y = 0; y<480; y++) {
-//	  for (int x = 0; x<800; x++) {
-//		  FRAME_BUFFER[i++] = 255;
-//	  }
-//  }
-#else
-	printf("******** LTDC Example ********\r\n");
-	HAL_GPIO_WritePin (DISP_GPIO_Port, DISP_Pin, GPIO_PIN_SET);
-	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
-	TIM2->CCR4 = 500;
-	BSP_LCD_Init();
-	HAL_Delay(50);
+  BSP_LCD_Init();
+  GT811_Init(&hi2c4);
 
-	//Pixel  800*480  RGB565
-	Paint_NewImage(800, 480, 0, 0xffff);
-	Paint_Clear(0xffff);
-	Paint_DrawString_EN(10, 230, "1234567890", &Font24, 0x000f, 0xfff0);
-	Paint_DrawString_EN(10, 260, "ABCDEFGHIJ", &Font24, BLUE, CYAN);
-	Paint_DrawString_CN(10, 290, "Î¢Ñ©µç×Ó", &Font24CN, BLUE, CYAN);
-
-	Paint_DrawRectangle(200, 230, 300, 330, RED,DRAW_FILL_EMPTY, DOT_PIXEL_2X2 );
-	Paint_DrawLine(200, 230, 300, 330, MAGENTA, LINE_STYLE_SOLID, DOT_PIXEL_2X2);
-	Paint_DrawLine(300, 230, 200, 330, MAGENTA, LINE_STYLE_SOLID, DOT_PIXEL_2X2);
-	Paint_DrawCircle(250, 280, 45, GREEN, DRAW_FILL_EMPTY, DOT_PIXEL_2X2);
-	Paint_DrawImage(gImage_800X221, 0, 0, 800, 221);
-#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	  HAL_GPIO_WritePin(LED2_Out_GPIO_Port, LED2_Out_Pin, GPIO_PIN_SET);
+	  //HAL_GPIO_WritePin(LED2_Out_GPIO_Port, LED2_Out_Pin, GPIO_PIN_SET);
 
   while (1)
   {
@@ -206,17 +182,18 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC|RCC_PERIPHCLK_USART1
-                              |RCC_PERIPHCLK_FMC;
+                              |RCC_PERIPHCLK_I2C4|RCC_PERIPHCLK_FMC;
   PeriphClkInitStruct.PLL3.PLL3M = 4;
   PeriphClkInitStruct.PLL3.PLL3N = 88;
   PeriphClkInitStruct.PLL3.PLL3P = 2;
-  PeriphClkInitStruct.PLL3.PLL3Q = 2;
+  PeriphClkInitStruct.PLL3.PLL3Q = 4;
   PeriphClkInitStruct.PLL3.PLL3R = 8;
   PeriphClkInitStruct.PLL3.PLL3RGE = RCC_PLL3VCIRANGE_1;
   PeriphClkInitStruct.PLL3.PLL3VCOSEL = RCC_PLL3VCOMEDIUM;
   PeriphClkInitStruct.PLL3.PLL3FRACN = 0;
   PeriphClkInitStruct.FmcClockSelection = RCC_FMCCLKSOURCE_D1HCLK;
   PeriphClkInitStruct.Usart16ClockSelection = RCC_USART16CLKSOURCE_D2PCLK2;
+  PeriphClkInitStruct.I2c4ClockSelection = RCC_I2C4CLKSOURCE_PLL3;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();
