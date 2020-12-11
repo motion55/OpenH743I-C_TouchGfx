@@ -40,12 +40,13 @@
 #ifndef __GT811_H
 #define __GT811_H
 
-/* Includes ------------------------------------------------------------------*/
-#include "main.h"
-/* Macros --------------------------------------------------------------------*/
 #ifdef __cplusplus
 extern "C" {
 #endif
+  
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+/* Macros --------------------------------------------------------------------*/
 
 /** @typedef GT811_handle_TypeDef
  *  GT811 Handle definition.
@@ -101,7 +102,6 @@ extern "C" {
 
 #define GT811_VERSION_VALUE      0x2010   /* GT811 firmware version */
 
-
 typedef struct
 {
 	uint8_t  touchDetected;                /*!< Total number of active touches detected at last scan */
@@ -111,15 +111,10 @@ typedef struct
 	uint32_t SensorId; /*!< type of gesture detected : take value of type @ref TS_GestureIdTypeDef */
 } TS_StateTypeDef;
 
-uint8_t GT811_Init(I2C_HandleTypeDef *hi2c);
+
+uint8_t GT811_Init(void);
 uint16_t GT811_ReadID(void);
 void GT811_GetState(TS_StateTypeDef *TS_State);
-/**
- * @}
- */
-#ifdef __cplusplus
-}
-#endif
 /**
  * @}
  */
@@ -127,5 +122,13 @@ void GT811_GetState(TS_StateTypeDef *TS_State);
 /**
  * @}
  */
+
+/**
+ * @}
+ */
+#ifdef __cplusplus
+}
+#endif
+
 #endif
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
